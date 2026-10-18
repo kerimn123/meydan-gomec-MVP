@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Meydan",
+    "slug": "meydan-gomec-mvp",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1F3A34"
+    },
+    "ios": {
+      "supportsTablet": false
+    },
+    "android": {
+      "package": "tr.gomec.meydan.mvp",
+      "adaptiveIcon": {
+        "backgroundColor": "#1F3A34",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}

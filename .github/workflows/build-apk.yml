@@ -1,0 +1,55 @@
+# GitHub sunucularında APK derler ve "Releases" bölümüne yükler.
+# Depoya her gönderimde veya Actions sekmesinden "Run workflow" ile elle çalışır.
+name: APK derle
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # GitHub'ın Ubuntu sunucularında Android SDK kurulu gelir; yalnızca lisansları onaylıyoruz
+      - name: Android SDK lisanslarını onayla
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+
+      - name: Bağımlılıkları yükle
+        run: npm ci
+
+      - name: Android projesini oluştur
+        run: npx expo prebuild --platform android --no-install
+
+      - name: APK derle
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a,armeabi-v7a
+
+      - name: APK'yı adlandır
+        run: cp android/app/build/outputs/apk/release/app-release.apk Meydan-MVP.apk
+
+      - name: Release olarak yayınla
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mvp-${{ github.run_number }}
+          name: Meydan MVP ${{ github.run_number }}
+          body: Telefondan "Meydan-MVP.apk" dosyasına dokunarak indirip kurabilirsiniz.
+          files: Meydan-MVP.apk
